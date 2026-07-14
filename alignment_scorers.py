@@ -540,6 +540,9 @@ class LLMScorer(AlignmentScorer):
 SCORER_LABELS_DE_EN = {
     "cosine": "Multilingual MiniLM (cosine)",
     "labse": "LaBSE (cosine)",
+    "mpnet": "MPNet cosine (paraphrase-multilingual-mpnet-base-v2)",
+    "distiluse": "DistilUSE cosine (distiluse-base-multilingual-cased-v2)",
+    "bge_m3": "BGE-M3 cosine (BAAI/bge-m3)",
     "bertscore": "BERTScore (XLM-R, F1)",
     "charngram": "Character n-gram TF-IDF",
     "nli": "XNLI entailment (bidirectional average)",
@@ -550,6 +553,9 @@ SCORER_LABELS_DE_EN = {
 SCORER_LABELS_EN_EN = {
     "cosine": "Multilingual MiniLM (cosine)",
     "labse": "LaBSE (cosine)",
+    "mpnet": "MPNet cosine (all-mpnet-base-v2)",
+    "distiluse": "DistilUSE cosine (distiluse-base-multilingual-cased-v2)",
+    "bge_m3": "BGE-M3 cosine (BAAI/bge-m3)",
     "bertscore": "BERTScore (XLM-R, F1)",
     "charngram": "Character n-gram TF-IDF",
     "nli": "XNLI entailment (bidirectional average)",
@@ -567,6 +573,12 @@ def scorer_labels_for_mode(pair_mode: PairMode = "de_en") -> Dict[str, str]:
     return SCORER_LABELS_DE_EN
 
 
+def _mpnet_model_name(pair_mode: PairMode) -> str:
+    if pair_mode == "en_en":
+        return "sentence-transformers/all-mpnet-base-v2"
+    return "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+
+
 def make_scorer(
     kind: str,
     df: Optional[pd.DataFrame] = None,
@@ -579,6 +591,11 @@ def make_scorer(
     scorers = {
         "cosine": lambda: SentenceEmbeddingScorer(df),
         "labse": lambda: LaBSECosineScorer(df),
+        "mpnet": lambda: LaBSECosineScorer(df, model_name=_mpnet_model_name(pair_mode)),
+        "distiluse": lambda: LaBSECosineScorer(
+            df, model_name="sentence-transformers/distiluse-base-multilingual-cased-v2"
+        ),
+        "bge_m3": lambda: LaBSECosineScorer(df, model_name="BAAI/bge-m3"),
         "bertscore": lambda: BERTScoreScorer(df, lang=bert_lang),
         "charngram": lambda: CharNGramScorer(df, fit_column=char_fit_column),
         "nli": lambda: NLIScorer(df),

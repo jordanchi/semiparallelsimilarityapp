@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: streamlit-app
+    image:
+      url: docker.io/jordanchi/streamlit-app:latest
+    port: 8501
+    envVars:
+      - key: PORT
+        value: 8501

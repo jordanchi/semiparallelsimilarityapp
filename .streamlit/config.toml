@@ -1,5 +1,11 @@
 [server]
 maxUploadSize = 200
+runOnSave = true
+headless = true
+
+[client]
+showErrorDetails = true
 
 [browser]
 gatherUsageStats = false
+serverAddress = "0.0.0.0"
